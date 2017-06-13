@@ -46,7 +46,6 @@ def write_anchors_to_file(centroids,X,anchor_file):
     f = open(anchor_file,'w')
     
     anchors = centroids.copy()
-    print anchors.shape
 
     for i in range(anchors.shape[0]):
         anchors[i][0]*=width_in_cfg_file/32.
@@ -56,7 +55,7 @@ def write_anchors_to_file(centroids,X,anchor_file):
     widths = anchors[:,0]
     sorted_indices = np.argsort(widths)
 
-    print 'Anchors = ', anchors[sorted_indices] 
+    print('Anchors = ', anchors[sorted_indices])
         
     for i in sorted_indices[:-1]:
         f.write('%0.2f,%0.2f, '%(anchors[i,0],anchors[i,1]))
@@ -65,10 +64,9 @@ def write_anchors_to_file(centroids,X,anchor_file):
     f.write('%0.2f,%0.2f\n'%(anchors[sorted_indices[-1:],0],anchors[sorted_indices[-1:],1]))
     
     f.write('%f\n'%(avg_IOU(X,centroids)))
-    print
+    print()
 
 def kmeans(X,centroids,eps,anchor_file):
-    
     N = X.shape[0]
     iterations = 0
     k,dim = centroids.shape
@@ -84,13 +82,13 @@ def kmeans(X,centroids,eps,anchor_file):
             D.append(d)
         D = np.array(D) # D.shape = (N,k)
         
-        print "iter {}: dists = {}".format(iter,np.sum(np.abs(old_D-D)))
+        print("iter {}: dists = {}".format(iter,np.sum(np.abs(old_D-D))))
             
         #assign samples to centroids 
-        assignments = np.argmin(D,axis=1)
+        assignments = np.argmin(D,axis=1)  # assignments shape is N
         
         if (assignments == prev_assignments).all() :
-            print "Centroids = ",centroids            
+            print("Centroids = ",centroids)           
             write_anchors_to_file(centroids,X,anchor_file)
             return
 
@@ -98,11 +96,13 @@ def kmeans(X,centroids,eps,anchor_file):
         centroid_sums=np.zeros((k,dim),np.float)
         for i in range(N):
             centroid_sums[assignments[i]]+=X[i]        
-        for j in range(k):            
+        for j in range(k):
             centroids[j] = centroid_sums[j]/(np.sum(assignments==j))
         
         prev_assignments = assignments.copy()     
-        old_D = D.copy()  
+        old_D = D.copy()
+
+
 
 def main(argv):
     parser = argparse.ArgumentParser()
@@ -135,13 +135,14 @@ def main(argv):
 
         line = line.replace('.jpg','.txt')
         line = line.replace('.png','.txt')
-        print line
+        
         f2 = open(line)
         for line in f2.readlines():
             line = line.rstrip('\n')
-            w,h = line.split(' ')[3:]            
+            w,h = line.split(' ')[3:]   
             #print w,h
-            annotation_dims.append(map(float,(w,h)))
+            annotation_dims.append(list(map(float,(w,h))))
+
     annotation_dims = np.array(annotation_dims)
   
     eps = 0.005
@@ -153,13 +154,15 @@ def main(argv):
             indices = [ random.randrange(annotation_dims.shape[0]) for i in range(num_clusters)]
             centroids = annotation_dims[indices]
             kmeans(annotation_dims,centroids,eps,anchor_file)
-            print 'centroids.shape', centroids.shape
+            print('centroids.shape', centroids.shape)
     else:
         anchor_file = join( args.output_dir,'anchors%d.txt'%(args.num_clusters))
         indices = [ random.randrange(annotation_dims.shape[0]) for i in range(args.num_clusters)]
+        
         centroids = annotation_dims[indices]
+
         kmeans(annotation_dims,centroids,eps,anchor_file)
-        print 'centroids.shape', centroids.shape
+        print('centroids.shape', centroids.shape)
 
 if __name__=="__main__":
     main(sys.argv)

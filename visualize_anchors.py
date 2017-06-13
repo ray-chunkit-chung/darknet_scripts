@@ -14,7 +14,7 @@ def main(argv):
     args = parser.parse_args()
     
     
-    print "anchors list you provided{}".format(args.anchor_dir)
+    print("anchors list you provided{}".format(args.anchor_dir))
 
     [H,W] = (416,416)
     stride = 32
@@ -36,7 +36,7 @@ def main(argv):
 
         filename = join(args.anchor_dir,anchor_file).replace('.txt','.png')
         
-        print filename
+        print(filename)
 
         stride_h = 10
         stride_w = 3
@@ -50,7 +50,7 @@ def main(argv):
 
             w=int (w*stride)
             h=int(h*stride)
-            print w,h
+            print(w,h)
             cv2.rectangle(blank_image,(10+i*stride_w,10+i*stride_h),(w,h),colors[i])
 
             #cv2.imshow('Image',blank_image)

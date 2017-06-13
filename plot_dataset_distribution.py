@@ -83,15 +83,15 @@ def main(argv):
                     #print dataset_args 
                     dataset_names.append(dataset_args[3])          
                     dataset_counts[dataset_args[3]]+=1
-        print 'len of the images  = ',len(dataset_names)
-        print dataset_counts
+        print('len of the images  = ',len(dataset_names))
+        print(dataset_counts)
         
         
         plt.subplot(num_partitions,2,partition)
-        print dataset_counts.keys()
-        print dataset_counts.values()
+        print(dataset_counts.keys())
+        print(dataset_counts.values())
         plt.bar(xrange(1,8),dataset_counts.values())
-        print 
+        print()
     plt.show()
     
   
